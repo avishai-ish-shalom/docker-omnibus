@@ -1,0 +1,37 @@
+{
+  "variables": {
+    "base_image": "ubuntu:precise",
+    "output_repository": "omnibus/ubuntu",
+    "output_tag": "precise"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "{{ user `base_image` }}",
+      "commit": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": "apt-get update && apt-get install -y tar curl bash fakeroot sudo"
+    },
+    {
+      "type": "chef-solo",
+      "cookbook_paths": ["berks-cookbooks"],
+      "run_list": [ "recipe[omnibus]" ],
+      "prevent_sudo": true
+    },
+    {
+      "type": "shell",
+      "inline": "apt-get clean"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "docker-tag",
+      "repository": "{{ user `output_repository` }}",
+      "tag": "{{ user `output_tag` }}"
+    }
+  ]
+}

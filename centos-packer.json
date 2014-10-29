@@ -1,0 +1,39 @@
+{
+  "variables": {
+    "base_image": "centos:centos6",
+    "output_repository": "omnibus/centos",
+    "output_tag": "6"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "{{ user `base_image` }}",
+      "commit": true,
+      "pull": false
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": "yum install -y tar fakeroot sudo"
+    },
+    {
+      "type": "chef-solo",
+      "cookbook_paths": ["berks-cookbooks"],
+      "run_list": [ "recipe[omnibus-custom]" ],
+      "prevent_sudo": true,
+      "execute_command": "{{if .Sudo}}sudo {{end}}chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}} -N packer"
+    },
+    {
+      "type": "shell",
+      "inline": "yum clean all"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "docker-tag",
+      "repository": "{{ user `output_repository` }}",
+      "tag": "{{ user `output_tag` }}"
+    }
+  ]
+}

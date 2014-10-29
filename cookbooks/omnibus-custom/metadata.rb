@@ -1,0 +1,11 @@
+name             'omnibus-custom'
+maintainer       ''
+maintainer_email ''
+license          ''
+description      'Installs/Configures omnibus-custom'
+long_description 'Installs/Configures omnibus-custom'
+version          '0.1.0'
+
+depends 'yum-epel'
+depends 'omnibus'
+depends 'sudo'
