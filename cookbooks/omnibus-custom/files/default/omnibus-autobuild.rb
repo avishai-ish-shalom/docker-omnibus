@@ -11,6 +11,9 @@ OptionParser.new do |opts|
   opts.on("-P [PUBLISH_GLOB]", "A glob pattern to publish matching artifacts") do |pattern|
     options[:publish_glob] = pattern
   end
+  opts.on("-B [S3_BUCKET]", "The S3 bucket to publish artifacts to") do |s3_bucket|
+    options[:s3_bucket] = s3_bucket
+  end
   opts.on("-o [OUTPUT_DIR]", "Copy artifacts (from the pkg sub-directory) to OUTPUT_DIR") do |out_dir|
     options[:output_dir] = out_dir
   end
@@ -62,5 +65,5 @@ if options[:output_dir]
 end
 
 if options[:publish_glob]
-  system "bin/omnibus publish s3 '#{options[:publish_glob]}'"
+  system "bin/omnibus publish s3 '#{options[:s3_bucket]} '#{options[:publish_glob]}'"
 end
