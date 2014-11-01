@@ -32,3 +32,8 @@ case node.platform_family
 when "rhel"
   resources(:execute => "selinux-permissive").action(:nothing)
 end
+
+ruby_gem "omnibus" do
+  ruby node['omnibus']['ruby_version']
+  version node['omnibus-custom']['omnibus']['version']
+end
