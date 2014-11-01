@@ -56,7 +56,7 @@ end
 FileUtils.chown user, group, source_path
 
 Dir.chdir source_path
-system "bundle install --binstubs"
+system "bundle install --binstubs --without development"
 system "bin/omnibus build #{options[:project]}"
 
 if options[:output_dir]
