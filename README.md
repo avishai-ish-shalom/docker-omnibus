@@ -7,6 +7,9 @@ The reason for pre building docker images is that compiling the tool chain for o
 
 Before building the images, bootstrap the Chef cookbooks using berkshelf: `berks vendor`
 
+Make sure you have compiled and installed the [packer docker-dockerfile post-processor](https://github.com/avishai-ish-shalom/packer-post-processor-docker-dockerfile).
+The post-processor is required to properly build the images.
+
 Make sure packer is in the `PATH`, then run the `build.sh` script. To build a specific image you can use packer directly,
 see the `build.sh` script for details.
 
@@ -23,13 +26,19 @@ The `omnibus-autobuild` utility takes care of annoying stuff like checking out y
 - `-R REPO_PATH` - Use `REPO_PATH` as the build source. You should mount `REPO_PATH` as a host volume when running docker (see example bellow)
 - `-P PUBLISH_GLOB` - Publish the files matching `PUBLISH_GLOB` to S3 using `omnibus publish s3`. See example bellow.
 
+The `omnibus-autobuild` utility is the default entrypoint for the docker images, so if you don't want to use it simply use `--entrypoint /bin/bash` on the docker command line.
+
 ### Building from a host volume
+
+Use the `-R` option with a host mounted volume:
+
+	docker run -v /tmp/pkg:/output -v /path/to/git-repo:/source --rm omnibus/centos-6 -p mcollective -o /output -R /source
 
 ### Building from a git repository
 
 The following command will clone the git repo, build the `mcollective` omnibus project and copy the output to `/output` directory which is a host volume.
 
-    docker run -v /tmp/pkg:/output --rm omnibus/centos:6 omnibus-autobuild -p mcollective -o /output -r http://github.com/avishai-ish-shalom/omnibus-mcollective.git
+    docker run -v /tmp/pkg:/output --rm omnibus/centos-6 -p mcollective -o /output -r http://github.com/avishai-ish-shalom/omnibus-mcollective.git
 
 ### Copying the build artifact to the host
 
@@ -47,4 +56,4 @@ publish_s3_secret_key ENV['S3_SECRET_KEY']
 
 Then specify the keys as environment variables and use the `-P` flag:
 
-     docker run -e S3_ACCESS_KEY=your-aws-access-key -e S3_SECRET_KEY=your-aws-secret-key --rm omnibus/centos:6 omnibus-autobuild -p mcollective -r http://github.com/avishai-ish-shalom/omnibus-mcollective.git -P '*.rpm'
+     docker run -e S3_ACCESS_KEY=your-aws-access-key -e S3_SECRET_KEY=your-aws-secret-key --rm omnibus/centos-6 omnibus-autobuild -p mcollective -r http://github.com/avishai-ish-shalom/omnibus-mcollective.git -P '*.rpm'
