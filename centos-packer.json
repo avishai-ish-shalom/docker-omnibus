@@ -30,10 +30,17 @@
     }
   ],
   "post-processors": [
-    {
-      "type": "docker-tag",
-      "repository": "{{ user `output_repository` }}",
-      "tag": "{{ user `output_tag` }}"
-    }
+      [
+          {
+              "type": "docker-dockerfile",
+              "user": "omnibus",
+              "entrypoint": ["/bin/bash", "-l", "-c", "omnibus-autobuild"]
+          },
+          {
+              "type": "docker-tag",
+              "repository": "{{ user `output_repository` }}",
+              "tag": "{{ user `output_tag` }}"
+          }
+      ]
   ]
 }
