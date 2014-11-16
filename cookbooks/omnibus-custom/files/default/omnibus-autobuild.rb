@@ -23,6 +23,10 @@ OptionParser.new do |opts|
   opts.on("-R [REPOSITORY_PATH]", "Use REPOSITORY_PATH as the build source path") do |repo_path|
     options[:repo_path] = repo_path
   end
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
 end.parse!(ARGV)
 
 def errexit(msg)
