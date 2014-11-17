@@ -19,6 +19,11 @@ package "sudo"
 include_recipe "omnibus"
 
 cookbook_file "/usr/local/bin/omnibus-autobuild" do
+  source "omnibus-autobuild.sh"
+  mode "0755"
+end
+
+cookbook_file "/usr/local/share/omnibus-autobuild.rb" do
   source "omnibus-autobuild.rb"
   mode "0755"
 end

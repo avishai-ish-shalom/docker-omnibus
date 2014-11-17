@@ -5,7 +5,7 @@ The reason for pre building docker images is that compiling the tool chain for o
 
 ## Building the Docker images
 
-Before building the images, bootstrap the Chef cookbooks using berkshelf: `berks vendor`
+Before building the images, bootstrap the Chef cookbooks using berkshelf: `berks vendor`; `berks` is part of the ChefDK package.
 
 Make sure you have compiled and installed the [packer docker-dockerfile post-processor](https://github.com/avishai-ish-shalom/packer-post-processor-docker-dockerfile).
 The post-processor is required to properly build the images.

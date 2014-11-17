@@ -34,7 +34,7 @@
           {
               "type": "docker-dockerfile",
               "user": "omnibus",
-              "entrypoint": ["/bin/bash", "-l", "-c", "omnibus-autobuild"]
+              "entrypoint": ["/usr/local/bin/omnibus-autobuild"]
           },
           {
               "type": "docker-tag",
