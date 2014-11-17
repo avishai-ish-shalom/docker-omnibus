@@ -37,6 +37,7 @@ end
 errexit "You must provide either -r or -R" unless options[:repo_path] or options[:repo_url]
 errexit "You must provide either -o or -P" unless options[:output_dir] or options[:publish_glob]
 errexit "-r and -R cannot be specified together" if options[:repo_url] and options[:repo_path]
+errexit "You must provide -p" unless options[:project]
 
 source_path = "/home/omnibus/source"
 user = "omnibus"
