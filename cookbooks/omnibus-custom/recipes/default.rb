@@ -31,6 +31,7 @@ end
 sudo "omnibus" do
   user "omnibus"
   nopasswd true
+  defaults ['!requiretty']
 end
 
 case node.platform_family
