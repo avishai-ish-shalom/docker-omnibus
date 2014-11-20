@@ -8,6 +8,7 @@
     {
       "type": "docker",
       "image": "{{ user `base_image` }}",
+      "run_command": ["-d", "-i", "-t", "{{.Image}}", "/bin/sh"],
       "commit": true,
       "pull": false
     }
