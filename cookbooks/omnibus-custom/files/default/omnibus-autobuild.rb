@@ -5,6 +5,9 @@ require 'fileutils'
 
 options = {}
 OptionParser.new do |opts|
+  opts.on("-b [BUILD_COMMAND]", "A command to run instead of `omnibus build`") do |build_command|
+    options[:build_command] = build_command
+  end
   opts.on("-p PROJECT", "The project to build") do |project|
     options[:project] = project
   end
@@ -55,14 +58,18 @@ if options[:repo_path]
 end
 
 if options[:repo_url]
-  system "git clone #{options[:repo_url]} #{source_path}"
+  system "git clone #{options[:repo_url]} #{source_path}" or errexit "Failed to run git clone"
 end
 
 FileUtils.chown user, group, source_path
 
 Dir.chdir source_path
-system "bundle install --binstubs --without development"
-system "bin/omnibus build #{options[:project]}"
+system "bundle install --binstubs --without development" or errexit "Failed to run bundle install"
+if options[:build_command]
+  system options[:build_command] or errexit "Failed to run #{options[:build_command]}"
+else
+  system "bin/omnibus build #{options[:project]}" or errexit "Failed to run ombnibus build"
+end
 
 if options[:output_dir]
   raise RuntimeError, "output_dir is not a valid directory!" unless File.directory? options[:output_dir]
