@@ -43,3 +43,7 @@ ruby_gem "omnibus" do
   ruby node['omnibus']['ruby_version']
   version node['omnibus-custom']['omnibus']['version']
 end
+
+ruby_gem "mixlib-shellout" do
+  ruby node['omnibus']['ruby_version']
+end

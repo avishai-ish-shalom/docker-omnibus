@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'fileutils'
+require 'mixlib/shellout'
 
 options = {}
 OptionParser.new do |opts|
@@ -24,6 +25,9 @@ OptionParser.new do |opts|
     options[:repo_url] = repo_url
   end
   opts.on("-R [REPOSITORY_PATH]", "Use REPOSITORY_PATH as the build source path") do |repo_path|
+    options[:repo_path] = repo_path
+  end
+  opts.on("-R [REPOSITORY_REF]", "Checkout REPOSITORY_REF from the source repo; Should be used with -r") do |repo_path|
     options[:repo_path] = repo_path
   end
   opts.on_tail("-h", "--help", "Show this message") do
@@ -50,6 +54,15 @@ def sudo(command)
   system("sudo #{command}")
 end
 
+def run(command, opts={})
+  err_msg = opts.delete!(:err_msg)
+  cmd = Mixlib::ShellOut.new(command, opts)
+  cmd.run_command
+  if err_msg and cmd.err?
+    errexit(err_msg + "\n" + cmd.stdout.lines.map{|l| "STDOUT: " + l} + "\n" + cmd.stderr.lines.map{|l| "STDERR: " + l})
+  end
+end
+
 sudo "mkdir -p /opt/#{options[:project]}"
 sudo "chown #{user}:#{group} /opt/#{options[:project]}"
 
@@ -58,17 +71,18 @@ if options[:repo_path]
 end
 
 if options[:repo_url]
-  system "git clone #{options[:repo_url]} #{source_path}" or errexit "Failed to run git clone"
+  run("git clone --tags #{options[:repo_url]} #{source_path}", :err_msg => "Failed to run git clone")
+  run("git checkout #{options[:repo_ref]}", :cwd => source_path, :err_msg => "Failed to checkout ref #{options[:repo_ref}") if options[:repo_ref]
 end
 
 FileUtils.chown user, group, source_path
 
 Dir.chdir source_path
-system "bundle install --binstubs --without development" or errexit "Failed to run bundle install"
+run("bundle install --binstubs --without development", :err_msg => "Failed to run bundle install")
 if options[:build_command]
-  system options[:build_command] or errexit "Failed to run #{options[:build_command]}"
+  run(options[:build_command], :cwd => source_path, :err_msg => "Failed to run #{options[:build_command]}")
 else
-  system "bin/omnibus build #{options[:project]}" or errexit "Failed to run ombnibus build"
+  run("bin/omnibus build #{options[:project]}", :cwd => source_path, :err_msg => "Failed to run ombnibus build")
 end
 
 if options[:output_dir]
@@ -77,5 +91,5 @@ if options[:output_dir]
 end
 
 if options[:publish_glob]
-  system "bin/omnibus publish s3 '#{options[:s3_bucket]} '#{options[:publish_glob]}'"
+  run("bin/omnibus publish s3 '#{options[:s3_bucket]} '#{options[:publish_glob]}'", :cwd => source_path, :err_msg => "Failed to publish artifacts to S3")
 end
