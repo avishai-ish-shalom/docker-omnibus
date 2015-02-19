@@ -72,7 +72,7 @@ end
 
 if options[:repo_url]
   run("git clone --tags #{options[:repo_url]} #{source_path}", :err_msg => "Failed to run git clone")
-  run("git checkout #{options[:repo_ref]}", :cwd => source_path, :err_msg => "Failed to checkout ref #{options[:repo_ref}") if options[:repo_ref]
+  run("git checkout #{options[:repo_ref]}", :cwd => source_path, :err_msg => "Failed to checkout ref #{options[:repo_ref]}") if options[:repo_ref]
 end
 
 FileUtils.chown user, group, source_path
