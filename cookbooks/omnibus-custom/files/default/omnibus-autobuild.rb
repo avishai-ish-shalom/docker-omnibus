@@ -58,7 +58,7 @@ def run(command, opts={})
   err_msg = opts.delete(:err_msg)
   cmd = Mixlib::ShellOut.new(command, opts)
   cmd.run_command
-  if err_msg and cmd.err?
+  if err_msg and cmd.error?
     errexit(err_msg + "\n" + cmd.stdout.lines.map{|l| "STDOUT: " + l} + "\n" + cmd.stderr.lines.map{|l| "STDERR: " + l})
   end
 end
