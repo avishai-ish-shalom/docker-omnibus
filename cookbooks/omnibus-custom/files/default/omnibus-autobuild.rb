@@ -55,7 +55,7 @@ def sudo(command)
 end
 
 def run(command, opts={})
-  err_msg = opts.delete!(:err_msg)
+  err_msg = opts.delete(:err_msg)
   cmd = Mixlib::ShellOut.new(command, opts)
   cmd.run_command
   if err_msg and cmd.err?
