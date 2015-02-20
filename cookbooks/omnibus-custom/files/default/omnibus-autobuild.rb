@@ -59,7 +59,7 @@ def run(command, opts={})
   cmd = Mixlib::ShellOut.new(command, opts)
   cmd.run_command
   if err_msg and cmd.error?
-    errexit(err_msg + "\n" + cmd.stdout.lines.map{|l| "STDOUT: " + l} + "\n" + cmd.stderr.lines.map{|l| "STDERR: " + l})
+    errexit([err_msg, cmd.stdout.lines.map{|l| "STDOUT: " + l} + cmd.stderr.lines.map{|l| "STDERR: " + l}].join("\n"))
   end
 end
 
@@ -71,7 +71,7 @@ if options[:repo_path]
 end
 
 if options[:repo_url]
-  run("git clone --tags #{options[:repo_url]} #{source_path}", :err_msg => "Failed to run git clone")
+  run("git clone #{options[:repo_url]} #{source_path}", :err_msg => "Failed to run git clone")
   run("git checkout #{options[:repo_ref]}", :cwd => source_path, :err_msg => "Failed to checkout ref #{options[:repo_ref]}") if options[:repo_ref]
 end
 
