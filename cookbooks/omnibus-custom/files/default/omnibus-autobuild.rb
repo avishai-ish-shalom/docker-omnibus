@@ -79,11 +79,13 @@ FileUtils.chown user, group, source_path
 
 Dir.chdir source_path
 run("bundle install --binstubs --without development", :err_msg => "Failed to run bundle install")
-if options[:build_command]
-  run(options[:build_command], :cwd => source_path, :err_msg => "Failed to run #{options[:build_command]}")
+build_success = if options[:build_command]
+  system(options[:build_command], :chdir => source_path)
 else
-  run("bin/omnibus build #{options[:project]}", :cwd => source_path, :err_msg => "Failed to run ombnibus build")
+  system("bin/omnibus build #{options[:project]}", :chdir => source_path)
 end
+
+errexit "Build failed, exiting" unless build_success
 
 if options[:output_dir]
   raise RuntimeError, "output_dir is not a valid directory!" unless File.directory? options[:output_dir]
